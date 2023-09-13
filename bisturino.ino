@@ -1,8 +1,14 @@
-//Definir os parâmtetros
+//Definir os paramtetros
 
 int frequency = 50;
 float offset = 2.5;
 float period = 1.0/frequency;
+
+float cut [] = {frequency, offset, 100, 2};
+float blend_1 [] = {frequency, offset, 75, 2.25};
+float blend_2 [] = {frequency, offset, 50, 2.5};
+float blend_3 [] = {frequency, offset, 25, 2.25};
+float coag [] = {frequency, offset, 5, 3};
 
 // Define the pins for the resistor ladder
 #define LSB 4 // Least significant bit
@@ -32,7 +38,7 @@ int adc_d(int value){
     digitalWrite(i, bitRead(value, i - LSB));
   }}
 
-int bist_d(int frequency, int offest, int duty, float amp){
+int bist_d(float frequency, float offest, float duty, float amp){
 	
   for (float z = 0; z<=period/((duty-100)/100); z += 0.001){
   for (float t = 0; t<=period; t += 0.001){
@@ -43,8 +49,10 @@ int bist_d(int frequency, int offest, int duty, float amp){
     delay(1000*(duty-100)*period);}}
 
 void loop() {
-  if (digitalRead(SW1) == LOW) {bist_d(frequency, offset, 100, 2);}
-  if (digitalRead(SW2) == LOW) {bist_d(frequency, offset, 50, 2.5);}
-  if (digitalRead(SW3) == LOW) {bist_d(frequency, offset, 6, 3);}
+
+  if (digitalRead(SW1) == LOW) {bist_d(cut[0], cut[1], cut[2], cut[3]);}
+  if (digitalRead(SW2) == LOW) {bist_d(blend_2 [0], blend_2 [1], blend_2 [2], blend_2 [3] );}
+  if (digitalRead(SW3) == LOW) {bist_d(coag [0], coag [1], coag [2], coag [3]);}
   else {adc_d((1024/5)*offset);}
+
 }
